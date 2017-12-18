@@ -13,15 +13,24 @@
     This page is intended to show in a quick way what redux-tiles code is actually equivalent to.
     We assume that in vanilla redux we use redux-thunk with third parameter.
   </p>
+  <section class="choices-container">
+    <div class="choice active" data-value="basic">
+      Basic tile
+    </div>
+    <div class="choice" data-value="caching">
+      Tile with caching
+    </div>
+    <div class="choice" data-value="nesting">
+      Tile with nesting
+    </div>
+  </section>
   <section>
     <div>
 
     </div>
     <div class="code-container">
-      <div id="redux-tiles-code">
-          <pre>
-            <code class="js">
-import { createTile } from 'redux-tiles';
+      <div>
+        <pre><code class="js" id="redux-tiles-code">import { createTile } from 'redux-tiles';
 
 const authTile = createTile({
   type: ['user', 'auth'],
@@ -30,10 +39,8 @@ const authTile = createTile({
             </code>
           </pre>
         </div>
-        <div id="redux-tiles-code">
-          <pre>
-            <code class="js">
-const USER_AUTH_START = 'USER_AUTH_START';
+        <div>
+          <pre><code class="js"  id="vanilla-code">const USER_AUTH_START = 'USER_AUTH_START';
 const USER_AUTH_SUCCESS = 'USER_AUTH_SUCCESS';
 const USER_AUTH_FAILURE = 'USER_AUTH_FALURE';
 
@@ -46,7 +53,7 @@ export function authUser(params) {
     return api.post('/login', params)
       .then(data => dispatch({
         type: USER_AUTH_SUCCESS,
-        payload: data
+        payload: { data }
       }))
       .catch(error => dispatch({
         type: USER_AUTH_FAILURE,
@@ -68,15 +75,15 @@ export function reducer(state, action) {
       return {
         isPending: false,
         fetched: true,
-        data: action.payload,
+        data: { data: action.payload },
         error: null
       });
     case USER_AUTH_FAILURE:
       return {
         isPending: false,
         fetched: true,
-        data: action.payload,
-        error: null
+        data: null,
+        error: action.error
       });
     default:
       return state;
@@ -87,5 +94,6 @@ export function reducer(state, action) {
         </div>
     </div>
   </section>
+  <script src="./index.js"></script>
 </body>
 </html>
