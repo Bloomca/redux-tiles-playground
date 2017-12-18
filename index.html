@@ -1,0 +1,58 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta http-equiv="X-UA-Compatible" content="ie=edge"><link rel="stylesheet" href="./031b24a23531a02bda404677919b553d.css"><title>Redux-tiles playground</title></head><body><h1 class="page-title">Redux tiles playground</h1><p class="page-description">This page is intended to show in a quick way what redux-tiles code is actually equivalent to. We assume that in vanilla redux we use redux-thunk with third parameter.</p><section class="choices-container"><div class="choice active" data-value="basic">Basic tile</div><div class="choice" data-value="caching">Tile with caching</div><div class="choice" data-value="nesting">Tile with nesting</div></section><section><div></div><div class="code-container"><div><pre><code class="js" id="redux-tiles-code">import { createTile } from 'redux-tiles';
+
+const authTile = createTile({
+  type: ['user', 'auth'],
+  fn: ({ params, api }) => api.post('/login', params)
+});
+            </code>
+          </pre></div><div><pre><code class="js" id="vanilla-code">const USER_AUTH_START = 'USER_AUTH_START';
+const USER_AUTH_SUCCESS = 'USER_AUTH_SUCCESS';
+const USER_AUTH_FAILURE = 'USER_AUTH_FALURE';
+
+export function authUser(params) {
+  return (dispatch, getState, { api }) => {
+    dispatch({
+      type: USER_AUTH_START
+    });
+
+    return api.post('/login', params)
+      .then(data => dispatch({
+        type: USER_AUTH_SUCCESS,
+        payload: { data }
+      }))
+      .catch(error => dispatch({
+        type: USER_AUTH_FAILURE,
+        error
+      }));
+  }
+}
+
+export function reducer(state, action) {
+  switch (action.type) {
+    case USER_AUTH_START:
+      return {
+        isPending: true,
+        fetched: false,
+        data: null,
+        error: null
+      };
+    case USER_AUTH_SUCCESS:
+      return {
+        isPending: false,
+        fetched: true,
+        data: { data: action.payload },
+        error: null
+      });
+    case USER_AUTH_FAILURE:
+      return {
+        isPending: false,
+        fetched: true,
+        data: null,
+        error: action.error
+      });
+    default:
+      return state;
+  }
+}
+            </code>
+          </pre></div></div></section><script src="./redux-tiles-playground.js"></script></body></html>
